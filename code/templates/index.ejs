@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth2 Server</title>
+    <style>
+        body {
+            background: linear-gradient(to top, #8e9b99, #e9ecec);
+            margin: 0;
+            font-family: Arial, sans-serif;
+            font-size: 16px;
+            background-color: #f2f2f2;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            margin-bottom: 30px;
+            font-size: 3em;
+        }
+
+        form {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #1da1f2;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #0c7fb5;
+        }
+
+        p {
+            text-align: center;
+            font-size: 1.2em;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>OAuth2 Project API</h1>
+    <form method="GET" action="/facebook/">  
+        <input type="submit" value="Login with Facebook"/>  
+    </form>
+    <form method="GET" action="/microsoft/login">  
+        <input type="submit" value="Login with Microsoft"/>  
+    </form>
+    <p>criado por: Félix A. Motelevicz</p>
+</body>
+</html>

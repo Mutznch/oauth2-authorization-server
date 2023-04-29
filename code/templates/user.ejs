@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>User</title>
+    <style>
+        html {
+            height: 100%;
+            background: linear-gradient(to top, #8e9b99, #e9ecec);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            background-color: #f0ebeb;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 600px; 
+            margin: 0 auto; 
+        }
+
+        h3 {
+            margin-top: 0;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Welcome, <%= userName %></h2>
+        <h3>Your Application</h3>
+        <ul>
+            <li><strong>client id</strong>: <%= clientId %></li>
+            <li><strong>client secret</strong>: <%= clientSecret %></li>
+        </ul>
+    </div>
+</body>
+</html>
