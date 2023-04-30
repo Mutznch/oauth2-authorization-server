@@ -34,7 +34,7 @@ app.set('views', `${__dirname}/../templates`);
 
 const users = [{
     id: 'oidc_client',
-    name: 'teste',
+    name: 'name',
     platform: 'none',
     secret: 'a_different_secret'
 }];
@@ -69,13 +69,14 @@ function makeSecret(length) {
 }
 
 function createUser(id,name,platform) {
+    const secret = makeSecret(10);
     const user = {
-        id,
+        id: id.toString(),
         name,
         platform,
-        secret: makeSecret(10)
+        secret: secret.toString()
     };
-    if (!(users.map(u => u.id).includes(id))) 
+    if (!(users.map(u => u.id).includes(user.id))) 
         users.push(user);
     return user;
 }
@@ -140,11 +141,75 @@ app.post('/microsoft/callback', async (req, res) =>{
         },
     })).data;
     const user = createUser(data.sub, data.name, platform);
+    console.log(users)
     providerInicializer();
     //console.log(createJWT(user.id, user.name));
     res.render("user", {userName: user.name, clientId: user.id, clientSecret: user.secret})
 });
 
+app.get('/oauth/auth', (req, res) =>{
+    const client_id = req.body.client_id || req.query.client_id || '';
+    const response_type = req.body.response_type || req.query.response_type || '';
+    const redirect_uri = req.body.redirect_uri || req.query.redirect_uri || false;
+    const scope = req.body.scope || req.query.scope || '';
+
+    let error = false;
+
+    if (!(users.map(u => u.id).includes(client_id)))
+        error = "invalid client id";
+    if (response_type !== 'authorization_code' && response_type !== 'code')
+        error = "invalid response type";
+    if (!redirect_uri) 
+        error = "invalid redirect uri";
+    if (scope !== 'token' && scope !== 'openid token' && scope !== 'token openid')
+        error = 'invalid scopes';
+
+    if (error) {
+        console.log(error);
+        res.redirect(`${redirect_uri}?error=${error}`);
+    }
+
+    else res.redirect(`http://localhost:3001/oidc/auth?client_id=${client_id}&response_type=code&response_mode=query&redirect_uri=${redirect_uri}&code_challenge=nqWxOqTBUa9iu9G5pL6LWChLS5TYEcyhwWbbQlj79ZU&code_challenge_method=S256&scope=token%20openid`)
+})
+
+app.post('/oauth/token', async (req, res) =>{
+    const client_id = req.body.client_id || req.query.client_id || '';
+    const client_secret = req.body.client_secret || req.query.client_secret || '';
+    const redirect_uri = req.body.redirect_uri || req.query.redirect_uri || false;
+    const code = req.body.code || req.query.code || false;
+
+    let error = false;
+
+    if (!(users.map(u => u.id).includes(client_id)))
+        error = "invalid client id";
+    if (users.filter(u => u.id === client_id && u.secret === client_secret).length === 0)
+        error = "invalid client secret";
+    if (!redirect_uri) 
+        error = "invalid redirect uri";
+    if (!code)
+        error = 'invalid code';
+
+    if (error) {
+        console.log(error);
+       return error
+    }
+
+    const auth = Buffer.from(`${client_id}:${client_secret}`).toString('base64');
+    const response = await axios.post(`http://localhost:3001/oidc/token`, {
+            grant_type: 'authorization_code',
+            code,
+            redirect_uri,
+            code_verifier: 'WzE2NywxMDgsMTEyLDU1LDIxOSwxNjksODAsMTQxLDQsNCwyNTMsOCwxNDksNDYsNjAsMTI4XQ'
+        }, {
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'Authorization': `Basic ${auth}`
+            }
+        }).catch(console.log);
+
+    return {...response.data};
+
+});
 
 function providerInicializer(){
     const clients = [];
@@ -154,16 +219,9 @@ function providerInicializer(){
         grant_types: ['authorization_code'],
         response_types: ['code'],
         redirect_uris: ['https://oauthdebugger.com/debug'],
-        scopes: ['data'],
     }));
     const configuration = {
         clients,
-        claims: {
-            data: ['data']
-        },
-        pkce: {
-            required: false
-        },
     };
 
     const provider = new Provider('http://localhost:3001', configuration);
