@@ -35,7 +35,8 @@ As rotas para utilizar o Authorization Code Flow são as seguintes:<br>
 
 <br><br><br>
 Utilize o 'https://oauthdebugger.com/' para requisitar o authorization code.<br>
-Para obter o Access Token, efetue um POST na rota correta e passe o code obtido no passo anterior.<br><br>
+Para obter o Access Token, efetue um POST na rota correta e passe o code obtido no passo anterior.<br>
+O 'scope' precisa necessariamente ser 'token openid' para funcionar<br><br>
 Exemplo de request de um Access Token utilizando Axios (PKCE):<br>
 ```await axios.post(`http://localhost:3001/oidc/token`, {```<br>
 ```            grant_type: 'authorization_code',```<br>
@@ -49,8 +50,11 @@ Exemplo de request de um Access Token utilizando Axios (PKCE):<br>
 ```            }```<br>
 ```        }).catch(console.log);```<br><br>
 enviar um State não é necessário.<br><br>
+
+Com o Access token, é possível utilizar a rota 'http://localhost:3001/oidc/me' passando o Bearer token no header para obter os dados do usuário<br><br>
 NOTA IMPORTANTE:<br>
 <ul>
 <li>Esta aplicação não possuí banco de dados e guarda todas as informações na memória, ou seja, não permite mais de um usuário logado ao mesmo tempo e reinicia-la fará com que todos os dados sejam perdidos.</li>
+<li></li>
 </ul>
 
